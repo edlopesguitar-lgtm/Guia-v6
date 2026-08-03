@@ -1,652 +1,567 @@
-Aqui está o código completo, corrigido e pronto para uso. Ele integra o **HTML, o CSS moderno e responsivo** e um script em **JavaScript** para fazer a página e as interações funcionarem na prática.
-
-### 🛠️ O que foi corrigido e implementado:
-
-1. **Protocolo `tel:` Funcional:** Todos os botões de emergência e telefones úteis agora discam diretamente ao serem clicados.
-2. **Âncoras do Menu:** O menu lateral redireciona corretamente para cada seção correspondente da página.
-3. **Módulo "Minha Lista de Compras":** Totalmente interativo com inclusão de itens, opção de marcar como concluído e exclusão. Os dados ficam salvos no navegador (`localStorage`).
-4. **Segurança & SEO:** Inclusão de atributos `rel="noopener noreferrer"` em links externos, `meta description` e tags `Open Graph` para pré-visualização ao compartilhar no WhatsApp.
-5. **Responsividade & Tabelas:** Tabelas envelopadas com rolagem horizontal e layout fluido para celulares.
-6. **Estilos Embutidos:** O CSS está inserido diretamente no `<head>`, garantindo que o visual funcione em qualquer plataforma (CodePen, GitHub Pages ou navegador local).
-
----
-
-```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guia Marques de Valença</title>
-    
-    <!-- Meta Tags SEO & Redes Sociais -->
-    <meta name="description" content="Guia Comercial, Horários de Ônibus, Telefones Úteis e Farmácia de Plantão em Valença - RJ.">
-    <meta property="og:title" content="Guia Marques de Valença">
-    <meta property="og:description" content="Encontre serviços, telefones de emergência, horários de ônibus e utilidades em Valença - RJ.">
-    <meta property="og:type" content="website">
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+    <title>Guia Marquês de Valença - App Oficial</title>
+    <meta name="theme-color" content="#0F9D58">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiR3VpYSBNYXJxdcOqcyBkZSBWYWxlbsOnYSIsInNob3J0X25hbWUiOiJNdWFpYSBNYXJxdWVzIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNmMGYxZjQiLCJ0aGVtZV9jb2xvciI6IiMwRjlENTgifQ==">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <style>
         :root {
-            --primary-color: #1e3a8a;
-            --primary-hover: #1d4ed8;
-            --accent-color: #f59e0b;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-color: #1e293b;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --radius: 12px;
+            --verde: #0F9D58; --verde-escuro: #064E3B; --gold: #fbbf24;
+            --bg: #f0fdf4; --card: #ffffff; --text: #1f2937; --borda: #d1fae5;
         }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); }
+       .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-        }
+        /* HEADER IGUAL DO SEU PRINT */
+        header { background: linear-gradient(160deg, var(--verde-escuro), var(--verde)); padding: 25px 0 35px; }
+       .header-top { text-align: center; color: white; margin-bottom: 25px; }
+       .header-top h1 { font-size: 2.2rem; font-weight: 900; letter-spacing: -0.5px; }
+       .header-top p { opacity: 0.95; font-size: 1rem; margin-top: 5px; }
+       .search-box { max-width: 650px; margin: 0 auto; position: relative; }
+       .search-box input { width: 100%; padding: 17px 55px; border-radius: 16px; border: none; font-size: 1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
+       .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); font-size: 1.4rem; }
 
-        html {
-            scroll-behavior: smooth;
-        }
+        /* HERO DESTAQUES DA SEMANA */
+       .hero { margin: -20px 0 30px; }
+       .hero-card { background: linear-gradient(135deg, var(--verde-escuro), #065f46); border-radius: 22px; overflow: hidden; position: relative; height: 190px; box-shadow: 0 10px 40px rgba(15,157,88,0.4); }
+       .hero-bg { position: absolute; inset: 0; background: url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200') center/cover; opacity: 0.3; }
+       .hero-content { position: relative; padding: 35px; color: white; height: 100%; display: flex; flex-direction: column; justify-content: end; }
+       .hero-content h2 { font-size: 1.9rem; font-weight: 800; margin-bottom: 6px; }
+       .hero-content p { opacity: 0.95; font-size: 1rem; }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            grid-template-rows: auto 1fr auto;
-            grid-template-areas: 
-                "header header"
-                "aside main"
-                "footer footer";
-            min-height: 100vh;
-        }
+        /* LAYOUT PRINCIPAL */
+       .grid-main { display: grid; grid-template-columns: 2fr 1fr; gap: 25px; margin: 30px 0; }
 
-        /* Header e Banner de Anúncio */
-        header {
-            grid-area: header;
-            background-color: var(--primary-color);
-            color: white;
-            padding: 1rem 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-            box-shadow: var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+        /* CATEGORIAS COM ÍCONES */
+       .categorias { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 25px; }
+       .cat-card { background: var(--card); border: 3px solid var(--borda); border-radius: 18px; padding: 22px 12px; text-align: center; cursor: pointer; transition: 0.3s; }
+       .cat-card:hover { transform: translateY(-6px); border-color: var(--verde); box-shadow: 0 10px 30px rgba(15,157,88,0.25); }
+       .cat-icon { font-size: 2.4rem; margin-bottom: 10px; }
+       .cat-nome { font-weight: 700; color: var(--text); font-size: 0.95rem; }
+       .cat-count { font-size: 0.8rem; color: #6b7280; margin-top: 4px; }
 
-        header .logo {
-            font-size: 1.4rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
+        /* FARMÁCIA PLANTÃO */
+       .plantao { background: linear-gradient(135deg, var(--verde), var(--verde-escuro)); border-radius: 22px; padding: 28px; color: white; box-shadow: 0 10px 40px rgba(15,157,88,0.5); }
+       .plantao-tag { background: rgba(255,255,255,0.25); display: inline-block; padding: 7px 16px; border-radius: 25px; font-size: 0.85rem; margin-bottom: 18px; font-weight: 600; }
+       .plantao h3 { font-size: 1.5rem; margin-bottom: 12px; font-weight: 800; }
+       .plantao-info { font-size: 0.95rem; opacity: 0.95; margin: 10px 0; display: flex; align-items: center; gap: 10px; }
+       .btn-plantao { background: white; color: var(--verde-escuro); padding: 15px; border-radius: 14px; text-decoration: none; display: block; text-align: center; font-weight: 800; margin-top: 18px; font-size: 1rem; }
 
-        header a.banner-anuncio {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #ffffff;
-            text-decoration: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 0.875rem;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-        }
+        /* SEJA PARCEIRO */
+       .parceiro { background: linear-gradient(135deg, var(--verde), var(--verde-escuro)); border-radius: 22px; padding: 35px; color: white; margin: 30px 0; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 40px rgba(15,157,88,0.4); }
+       .parceiro:hover { transform: scale(1.02); }
+       .parceiro h2 { font-size: 1.7rem; margin-bottom: 10px; font-weight: 800; }
+       .parceiro p { opacity: 0.95; font-size: 1.05rem; }
 
-        header a.banner-anuncio:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
+        /* EMPRESAS */
+       .section-title { color: var(--verde-escuro); font-size: 1.6rem; font-weight: 800; margin: 35px 0 20px; }
+       .empresas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 22px; }
+       .emp-card { background: var(--card); border: 3px solid var(--borda); border-radius: 18px; padding: 22px; transition: 0.3s; position: relative; }
+       .emp-card:hover { border-color: var(--verde); box-shadow: 0 10px 30px rgba(15,157,88,0.2); }
+       .emp-premium { border-color: var(--gold); border-width: 3px; }
+       .emp-premium::before { content: "⭐ PREMIUM"; position: absolute; top: -14px; right: 18px; background: var(--gold); color: #78350f; padding: 5px 14px; border-radius: 15px; font-size: 0.75rem; font-weight: 800; }
+       .emp-card h3 { color: var(--verde-escuro); font-size: 1.2rem; margin-bottom: 10px; font-weight: 700; }
+       .emp-cat { background: var(--verde); color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; display: inline-block; margin-bottom: 10px; }
+       .emp-card p { color: #6b7280; font-size: 0.92rem; margin: 12px 0; line-height: 1.6; }
+       .emp-actions { display: flex; gap: 10px; margin-top: 18px; }
+       .emp-actions a { flex: 1; text-align: center; padding: 12px; border-radius: 12px; text-decoration: none; font-size: 0.9rem; font-weight: 700; }
+       .btn-wpp { background: #25D366; color: white; }
+       .btn-maps { background: #4285F4; color: white; }
 
-        /* Menu Lateral (Aside) */
-        aside {
-            grid-area: aside;
-            background-color: var(--card-bg);
-            padding: 1.5rem 1rem;
-            border-right: 1px solid var(--border-color);
-        }
+        /* FAB ADMIN */
+       .fab-admin { position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px; border-radius: 50%; background: var(--gold); color: #78350f; border: none; font-size: 2rem; cursor: pointer; box-shadow: 0 8px 25px rgba(0,0,0,0.4); z-index: 999; }
 
-        aside .title {
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            font-weight: 700;
-            margin-bottom: 1rem;
-            padding-left: 0.5rem;
-        }
+        /* MODAL ADMIN */
+       .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; overflow-y: auto; }
+       .modal-content { background: var(--card); margin: 2% auto; padding: 35px; border-radius: 22px; width: 95%; max-width: 1000px; }
+       .close { float: right; font-size: 36px; cursor: pointer; color: #6b7280; }
+       .tabs { display: flex; gap: 12px; margin: 25px 0; border-bottom: 3px solid var(--borda); flex-wrap: wrap; }
+       .tab { padding: 14px 22px; cursor: pointer; border-radius: 12px 12px 0 0; font-weight: 700; transition: 0.2s; }
+       .tab.active { background: var(--verde); color: white; }
+       .tab-pane { display: none; }
+       .tab-pane.active { display: block; }
+       .form-group { margin-bottom: 18px; }
+       .form-group label { display: block; margin-bottom: 8px; font-weight: 700; color: var(--verde-escuro); }
+       .form-group input,.form-group select,.form-group textarea { width: 100%; padding: 14px; border: 2px solid var(--borda); border-radius: 12px; font-size: 0.95rem; }
+       .form-group input[type="color"] { height: 55px; padding: 6px; }
+       .btn { background: var(--verde); color: white; padding: 14px 28px; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 1rem; }
+       .btn-danger { background: #dc2626; }
+       .sortable-item { background: var(--bg); border: 2px solid var(--borda); border-radius: 14px; padding: 16px; margin: 12px 0; display: flex; align-items: center; gap: 15px; cursor: move; }
 
-        aside ul {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        aside a {
-            display: block;
-            padding: 0.75rem 1rem;
-            color: var(--text-color);
-            text-decoration: none;
-            font-weight: 500;
-            border-radius: 8px;
-            transition: background 0.2s, color 0.2s;
-        }
-
-        aside a:hover {
-            background-color: #f1f5f9;
-            color: var(--primary-color);
-        }
-
-        /* Conteúdo Principal */
-        main {
-            grid-area: main;
-            padding: 2rem;
-            max-width: 1000px;
-            width: 100%;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 2.5rem;
-        }
-
-        section {
-            background-color: var(--card-bg);
-            padding: 1.75rem;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-            scroll-margin-top: 90px;
-        }
-
-        h2 {
-            font-size: 1.35rem;
-            color: var(--primary-color);
-            margin-bottom: 1.25rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        h3 {
-            font-size: 1.1rem;
-            margin: 1.2rem 0 0.8rem 0;
-            color: var(--text-color);
-        }
-
-        /* Estilos da Minha Lista de Compras */
-        .lista-input-group {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .lista-input-group input {
-            flex: 1;
-            padding: 0.6rem 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 0.95rem;
-            outline: none;
-        }
-
-        .lista-input-group input:focus {
-            border-color: var(--primary-color);
-        }
-
-        .lista-input-group button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .lista-input-group button:hover {
-            background-color: var(--primary-hover);
-        }
-
-        .lista-items {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .lista-items li {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.6rem 0.8rem;
-            background-color: #f8fafc;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-        }
-
-        .lista-items li.concluido span {
-            text-decoration: line-through;
-            color: var(--text-muted);
-        }
-
-        .lista-items li .btn-del {
-            background: none;
-            border: none;
-            color: #ef4444;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1rem;
-            padding: 0 0.4rem;
-        }
-
-        /* Tabelas Responsivas */
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 0.95rem;
-        }
-
-        th, td {
-            padding: 0.85rem 1rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        th {
-            background-color: #f1f5f9;
-            color: var(--text-color);
-            font-weight: 600;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        /* Grid de Telefones Úteis */
-        .grid-emergencia {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1rem;
-        }
-
-        .btn-telefone {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            background-color: #f8fafc;
-            border: 1px solid var(--border-color);
-            padding: 1rem;
-            border-radius: 8px;
-            text-decoration: none;
-            color: var(--text-color);
-            transition: all 0.2s;
-        }
-
-        .btn-telefone:hover {
-            border-color: var(--primary-color);
-            background-color: #eff6ff;
-            transform: translateY(-2px);
-        }
-
-        .btn-telefone span:first-child {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-        }
-
-        .btn-telefone span:last-child {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
-        /* Tags de Farmácias */
-        .farmacias-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin: 1rem 0;
-        }
-
-        .farmacia-tag {
-            background-color: #e0f2fe;
-            color: #0369a1;
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-
-        .btn-link {
-            display: inline-block;
-            margin-top: 1rem;
-            color: var(--primary-color);
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        .btn-link:hover {
-            text-decoration: underline;
-        }
-
-        /* Footer */
-        footer {
-            grid-area: footer;
-            background-color: var(--card-bg);
-            text-align: center;
-            padding: 1.5rem;
-            border-top: 1px solid var(--border-color);
-            color: var(--text-muted);
-            font-size: 0.875rem;
-        }
-
-        /* Responsividade em Dispositivos Móveis */
         @media (max-width: 768px) {
-            body {
-                grid-template-columns: 1fr;
-                grid-template-areas: 
-                    "header"
-                    "aside"
-                    "main"
-                    "footer";
-            }
-
-            aside {
-                border-right: none;
-                border-bottom: 1px solid var(--border-color);
-            }
-
-            header {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            main {
-                padding: 1rem;
-            }
+           .grid-main { grid-template-columns: 1fr; }
+           .categorias { grid-template-columns: repeat(2, 1fr); }
+           .header-top h1 { font-size: 1.7rem; }
+           .hero-card { height: 160px; }
         }
     </style>
 </head>
 <body>
-
-    <header>
-        <div class="logo">Guia Marques de Valença</div>
-        <a href="https://wa.me/5524981400928?text=Olá,%20gostaria%20de%20anunciar%20no%20Guia%20Marques%20de%20Valença" target="_blank" rel="noopener noreferrer" class="banner-anuncio">
-            ⚡ ANUNCIE COM A GENTE POR UM REAL POR DIA! ⚡
-        </a>
-    </header>
-
-    <aside>
-        <div class="title">Marques de Valença</div>
-        <ul>
-            <li><a href="#comercios">📍 Comércios &amp; Empresas</a></li>
-            <li><a href="#minha-lista">📝 Minha Lista</a></li>
-            <li><a href="#farmacias">💊 Farmácia de Plantão</a></li>
-            <li><a href="#onibus">🚌 Horários de Ônibus</a></li>
-            <li><a href="#eventos">📅 Eventos &amp; Cultura</a></li>
-            <li><a href="#emergencia">🛠️ Úteis &amp; Emergência</a></li>
-            <li><a href="#previsao">🌦️ Previsão do Tempo</a></li>
-        </ul>
-    </aside>
-
-    <main>
-        <section id="comercios">
-            <h2>Comércios &amp; Empresas</h2>
-            <p style="color: var(--text-muted);">Encontre os principais estabelecimentos e serviços da cidade.</p>
-        </section>
-
-        <!-- Minha Lista Interativa com Salvamento no Navegador -->
-        <section id="minha-lista">
-            <h2>Minha Lista de Compras</h2>
-            <div class="lista-input-group">
-                <input type="text" id="item-input" placeholder="Adicionar item (ex: Leite, Pão)...">
-                <button onclick="adicionarItem()">Adicionar</button>
-            </div>
-            <ul id="lista-ul" class="lista-items"></ul>
-        </section>
-
-        <section id="farmacias">
-            <h2>Plantão das Farmácias (PMV)</h2>
-            <p><strong>⏰ Horário do Plantão Noturno:</strong> Das 21:00h às 08:00h do dia seguinte.</p>
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.4rem;">
-                Conforme diretrizes da Prefeitura Municipal de Valença (PMV), o atendimento noturno funciona em rodízio de escala entre as farmácias credenciadas.
-            </p>
-
-            <h3 style="font-size: 0.95rem; color: var(--text-muted);">Farmácias Integrantes do Rodízio:</h3>
-            <div class="farmacias-list">
-                <span class="farmacia-tag">Droga Mais</span>
-                <span class="farmacia-tag">Drogaria Moderna</span>
-                <span class="farmacia-tag">Jardim de Baixo</span>
-                <span class="farmacia-tag">Drogarias Pacheco</span>
-                <span class="farmacia-tag">Ultra Popular</span>
-                <span class="farmacia-tag">Droga Raia</span>
-                <span class="farmacia-tag">Popular Valenciana</span>
-                <span class="farmacia-tag">Drogaria Benfica</span>
-            </div>
-
-            <a href="https://www.valenca.rj.gov.br/" target="_blank" rel="noopener noreferrer" class="btn-link">
-                📍 Consultar Escala no Portal da Prefeitura &rarr;
-            </a>
-        </section>
-
-        <section id="onibus">
-            <h2>Grade de Horários de Ônibus</h2>
-            
-            <h3>Linhas Intermunicipais e Principais Rotas</h3>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Rota</th>
-                            <th>Dias</th>
-                            <th>Principais Horários (Saída de Valença)</th>
-                            <th>Empresa</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Rio de Janeiro</strong></td>
-                            <td>Diário</td>
-                            <td>04:00, 06:30, 08:30, 10:30, 13:25, 15:30, 18:00</td>
-                            <td>UTIL</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Volta Redonda / Barra Mansa</strong></td>
-                            <td>Seg-Sex</td>
-                            <td>05:00, 07:00, 09:00, 11:30, 13:00, 15:00, 17:15, 19:20</td>
-                            <td>UTIL</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Volta Redonda / Barra Mansa</strong></td>
-                            <td>Fim Sem / Fer</td>
-                            <td>07:00, 10:30, 13:00, 16:00, 19:30</td>
-                            <td>UTIL</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Barra do Piraí</strong></td>
-                            <td>Diário</td>
-                            <td>05:00, 05:50, 07:00, 08:00, 09:00, 10:00, 11:00, 12:00, 13:00, 14:00, 15:00</td>
-                            <td>Progresso / UTIL</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <h3 style="margin-top: 2rem;">Linhas dos Distritos</h3>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Destino</th>
-                            <th>Dias</th>
-                            <th>Horários</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Valença ⇄ Conservatória</strong></td>
-                            <td>Diário</td>
-                            <td>06:00, 08:30, 11:30, 14:30, 17:15, 19:00</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Valença ⇄ Barão de Juparanã</strong></td>
-                            <td>Segunda a Sábado</td>
-                            <td>06:15, 07:30, 10:00, 12:00, 15:30, 18:10</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Valença ⇄ Parapeúna / Santa Isabel</strong></td>
-                            <td>Diário</td>
-                            <td>06:00, 11:30, 16:00, 18:00</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Valença ⇄ Pentagna</strong></td>
-                            <td>Segunda a Sábado</td>
-                            <td>06:30, 09:00, 12:30, 15:30, 17:45</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="eventos">
-            <h2>Agenda Cultural &amp; Eventos</h2>
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
-                <div style="padding: 1rem; border-left: 4px solid var(--accent-color); background: #fffbeeb; border-radius: 4px;">
-                    <strong>Aniversário da Cidade de Valença</strong> — 29 de Setembro
-                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.2rem;">Desfile comemorativo e festividades no Centro.</p>
+    <!-- APP PÚBLICO -->
+    <div id="appPublico">
+        <header>
+            <div class="container">
+                <div class="header-top">
+                    <h1 id="nomeApp">Guia Marquês de Valença</h1>
+                    <p>Tudo da cidade na palma da mão</p>
                 </div>
-                <div style="padding: 1rem; border-left: 4px solid var(--primary-color); background: #f8fafc; border-radius: 4px;">
-                    <strong>Festa de Nossa Senhora da Glória</strong> — 15 de Agosto
-                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.2rem;">Celebração tradicional e feira na Catedral.</p>
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="buscaInput" placeholder="Buscar serviços, lojas, horários..." onkeyup="buscar()">
                 </div>
             </div>
-        </section>
+        </header>
 
-        <!-- Correção dos links para o protocolo de discagem tel: -->
-        <section id="emergencia">
-            <h2>Telefones Úteis e Emergência</h2>
-            <div class="grid-emergencia">
-                <a href="tel:190" class="btn-telefone">
-                    <span>Polícia Militar</span>
-                    <span>190</span>
-                </a>
-                <a href="tel:192" class="btn-telefone">
-                    <span>SAMU</span>
-                    <span>192</span>
-                </a>
-                <a href="tel:193" class="btn-telefone">
-                    <span>Corpo de Bombeiros</span>
-                    <span>193</span>
-                </a>
-                <a href="tel:02424537000" class="btn-telefone">
-                    <span>Prefeitura de Valença</span>
-                    <span>(24) 2453-7000</span>
-                </a>
-                <a href="tel:08002821210" class="btn-telefone">
-                    <span>Light - Emergência Elétrica</span>
-                    <span>0800 282 1210</span>
-                </a>
-                <a href="tel:08002821195" class="btn-telefone">
-                    <span>CEDAE - Água e Esgoto</span>
-                    <span>0800 282 1195</span>
-                </a>
-                <a href="tel:02424537100" class="btn-telefone">
-                    <span>91ª Delegacia de Polícia</span>
-                    <span>(24) 2453-7100</span>
-                </a>
-                <a href="tel:02424537200" class="btn-telefone">
-                    <span>Hospital Santa Casa</span>
-                    <span>(24) 2453-7200</span>
-                </a>
+        <div class="container">
+            <!-- HERO -->
+            <div class="hero">
+                <div class="hero-card">
+                    <div class="hero-bg"></div>
+                    <div class="hero-content">
+                        <h2>Destaques da Semana</h2>
+                        <p>O melhor de Valença em um só lugar</p>
+                    </div>
+                </div>
             </div>
-        </section>
 
-        <section id="previsao">
-            <h2>Previsão do Tempo em Valença</h2>
-            <div>
-                <h3>🌤️ Clima em Valença - RJ</h3>
-                <p style="color: var(--text-muted);">Acompanhe a previsão meteorológica completa, variação de temperatura e chances de chuva em tempo real.</p>
-                <a href="https://www.climatempo.com.br/previsao-do-tempo/cidade/319/valenca-rj" target="_blank" rel="noopener noreferrer" class="btn-link">
-                    Ver Previsão Completa no Climatempo &rarr;
-                </a>
+            <div class="grid-main">
+                <div>
+                    <!-- CATEGORIAS -->
+                    <div class="categorias" id="categoriasGrid"></div>
+
+                    <!-- SEJA PARCEIRO -->
+                    <div class="parceiro" onclick="abrirPlanos()">
+                        <h2>Seja um Parceiro</h2>
+                        <p>Anuncie seu comércio aqui e alcance toda a cidade</p>
+                    </div>
+                </div>
+
+                <div>
+                    <!-- FARMÁCIA PLANTÃO -->
+                    <div class="plantao">
+                        <div class="plantao-tag">💊 Farmácia de Plantão</div>
+                        <p style="font-size:0.9rem; opacity:0.9; margin-bottom:10px;">Plantão de hoje</p>
+                        <h3 id="nomePlantao">Drograria Valença</h3>
+                        <div class="plantao-info" id="endPlantao">📍 Rua Dr. Figueiredo, 120 – Centro</div>
+                        <div class="plantao-info" id="horaPlantao">⏰ Aberto 24h</div>
+                        <a href="tel:2433450000" id="telPlantao" class="btn-plantao">📞 Ligar Agora</a>
+                    </div>
+                </div>
             </div>
-        </section>
-    </main>
 
-    <footer>
-        <p>Criado por Jonas Eduardo</p>
-    </footer>
+            <!-- EMPRESAS -->
+            <h2 class="section-title">🏪 Estabelecimentos</h2>
+            <div class="empresas-grid" id="empresasGrid"></div>
+        </div>
+    </div>
 
-    <!-- Script da Minha Lista de Compras -->
+    <!-- FAB ADMIN -->
+    <button class="fab-admin" onclick="abrirAdmin()">⚙️</button>
+
+    <!-- MODAL ADMIN -->
+    <div id="modalAdmin" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharAdmin()">&times;</span>
+            <h2 style="color:var(--verde); margin-bottom:25px; font-size:1.8rem;">⚙️ Painel Marquês Pro</h2>
+
+            <div class="tabs">
+                <div class="tab active" onclick="trocarTab('identidade')">🎨 Identidade</div>
+                <div class="tab" onclick="trocarTab('categorias')">📂 Categorias</div>
+                <div class="tab" onclick="trocarTab('empresas')">🏪 Empresas</div>
+                <div class="tab" onclick="trocarTab('plantao')">💊 Plantão</div>
+                <div class="tab" onclick="trocarTab('planos')">💰 Planos</div>
+            </div>
+
+            <!-- TAB IDENTIDADE -->
+            <div id="identidade" class="tab-pane active">
+                <h3 style="margin-bottom:20px;">🎨 Identidade Visual</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                    <div class="form-group">
+                        <label>Cor Principal</label>
+                        <input type="color" id="corPrincipal" value="#0F9D58" onchange="salvarCor()">
+                    </div>
+                    <div class="form-group">
+                        <label>Cor Secundária</label>
+                        <input type="color" id="corSecundaria" value="#064E3B" onchange="salvarCor()">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Nome do App</label>
+                    <input type="text" id="nomeAppInput" value="Guia Marquês de Valença" onchange="salvarNome()">
+                </div>
+                <div class="form-group">
+                    <label>WhatsApp Vendas</label>
+                    <input type="text" id="whatsVendas" value="5524981400928" onchange="salvarWhats()">
+                </div>
+            </div>
+
+            <!-- TAB CATEGORIAS -->
+            <div id="categorias" class="tab-pane">
+                <h3>📂 Categorias - Arraste pra ordenar</h3>
+                <button class="btn" onclick="novaCategoria()">+ Nova Categoria</button>
+                <ul id="listaCategorias" class="sortable-list" style="margin-top:20px;"></ul>
+            </div>
+
+            <!-- TAB EMPRESAS -->
+            <div id="empresas" class="tab-pane">
+                <h3>🏪 Gerenciar Empresas</h3>
+                <button class="btn" onclick="novaEmpresa()">+ Nova Empresa</button>
+                <button class="btn" onclick="exportarDados()" style="margin-left:10px;">📥 Exportar Backup</button>
+                <div id="listaEmpresasAdmin" style="margin-top:20px;"></div>
+            </div>
+
+            <!-- TAB PLANTÃO -->
+            <div id="plantao" class="tab-pane">
+                <h3>💊 Farmácia de Plantão</h3>
+                <div class="form-group">
+                    <label><input type="checkbox" id="autoPlantao" checked> Buscar automático da Prefeitura todo dia 00:01</label>
+                </div>
+                <div class="form-group">
+                    <label>Nome</label>
+                    <input type="text" id="nomePlantaoInput" value="Drograria Valença">
+                </div>
+                <div class="form-group">
+                    <label>Endereço</label>
+                    <input type="text" id="endPlantaoInput" value="Rua Dr. Figueiredo, 120 – Centro">
+                </div>
+                <div class="form-group">
+                    <label>Telefone</label>
+                    <input type="text" id="telPlantaoInput" value="(24) 3345-0000">
+                </div>
+                <button class="btn" onclick="salvarPlantao()">💾 Salvar Plantão</button>
+            </div>
+
+            <!-- TAB PLANOS -->
+            <div id="planos" class="tab-pane">
+                <h3>💰 Planos de Assinatura</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                    <div class="form-group">
+                        <label>Essencial - R$</label>
+                        <input type="number" id="precoEssencial" value="30">
+                    </div>
+                    <div class="form-group">
+                        <label>Premium - R$</label>
+                        <input type="number" id="precoPremium" value="40">
+                    </div>
+                </div>
+                <button class="btn" onclick="salvarPlanos()">💾 Salvar Planos</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        document.addEventListener('DOMContentLoaded', carregarItens);
+        // BANCO DE DADOS
+        let db = JSON.parse(localStorage.getItem('guiaMarquesDB')) || {
+            identidade: { corPrincipal: '#0F9D58', corSecundaria: '#064E3B', nome: 'Guia Marquês de Valença', whats: '5524981400928' },
+            categorias: [
+                { id: 1, nome: 'Comércio', icone: '🛍️', ordem: 1 },
+                { id: 2, nome: 'Ônibus', icone: '🚌', ordem: 2 },
+                { id: 3, nome: 'Farmácias', icone: '💊', ordem: 3 },
+                { id: 4, nome: 'Cinema', icone: '🎬', ordem: 4 },
+                { id: 5, nome: 'Previsão', icone: '☀️', ordem: 5 },
+                { id: 6, nome: 'Emergência', icone: '🚨', ordem: 6 }
+            ],
+            empresas: [
+                { id: 1, nome: 'Drograria Valença', cat: 'Farmácias', desc: 'Medicamentos 24h', whats: '5524981400928', maps: 'https://maps.google.com', premium: true, plantao: true },
+                { id: 2, nome: 'Padaria Central', cat: 'Comércio', desc: 'Pães e doces artesanais', whats: '5524981400928', maps: 'https://maps.google.com', premium: false },
+                { id: 3, nome: 'Restaurante do Marquês', cat: 'Comércio', desc: 'Comida caseira self-service', whats: '5524981400928', maps: 'https://maps.google.com', premium: true }
+            ],
+            plantao: { auto: true, nome: 'Drograria Valença', end: 'Rua Dr. Figueiredo, 120 – Centro', tel: '(24) 3345-0000', hora: 'Aberto 24h' },
+            planos: { essencial: 30, premium: 40 }
+        };
 
-        function carregarItens() {
-            const itens = JSON.parse(localStorage.getItem('guia_lista_compras')) || [];
-            const ul = document.getElementById('lista-ul');
-            ul.innerHTML = '';
-            itens.forEach((item, index) => {
-                const li = document.createElement('li');
-                if (item.concluido) li.classList.add('concluido');
-                
-                li.innerHTML = `
-                    <span onclick="alternarConcluido(${index})" style="cursor:pointer; flex:1;">${item.texto}</span>
-                    <button class="btn-del" onclick="removerItem(${index})">&times;</button>
+        // INIT
+        function init() {
+            aplicarCores();
+            renderizarCategorias();
+            renderizarEmpresas();
+            carregarPlantao();
+            carregarAdmin();
+        }
+
+        function aplicarCores() {
+            document.documentElement.style.setProperty('--verde', db.identidade.corPrincipal);
+            document.documentElement.style.setProperty('--verde-escuro', db.identidade.corSecundaria);
+            document.getElementById('nomeApp').textContent = db.identidade.nome;
+            document.getElementById('nomeAppInput').value = db.identidade.nome;
+        }
+
+        function renderizarCategorias() {
+            const grid = document.getElementById('categoriasGrid');
+            grid.innerHTML = '';
+            db.categorias.sort((a,b) => a.ordem - b.ordem).forEach(cat => {
+                const count = db.empresas.filter(e => e.cat === cat.nome).length;
+                grid.innerHTML += `
+                    <div class="cat-card" onclick="filtrarCat('${cat.nome}')">
+                        <div class="cat-icon">${cat.icone}</div>
+                        <div class="cat-nome">${cat.nome}</div>
+                        <div class="cat-count">${count} ${cat.nome === 'Ônibus'? 'Horários' : cat.nome === 'Previsão'? 'Tempo real' : cat.nome === 'Emergência'? '24h' : cat.nome === 'Cinema'? 'Em breve' : ''}</div>
+                    </div>
                 `;
-                ul.appendChild(li);
             });
         }
 
-        function adicionarItem() {
-            const input = document.getElementById('item-input');
-            const texto = input.value.trim();
-            if (!texto) return;
-
-            const itens = JSON.parse(localStorage.getItem('guia_lista_compras')) || [];
-            itens.push({ texto, concluido: false });
-            localStorage.setItem('guia_lista_compras', JSON.stringify(itens));
-            input.value = '';
-            carregarItens();
+        function renderizarEmpresas() {
+            const grid = document.getElementById('empresasGrid');
+            grid.innerHTML = '';
+            db.empresas.sort((a,b) => b.premium - a.premium).forEach(emp => {
+                grid.innerHTML += `
+                    <div class="emp-card ${emp.premium? 'emp-premium' : ''}">
+                        <h3>${emp.nome}</h3>
+                        <span class="emp-cat">${emp.cat}</span>
+                        <p>${emp.desc}</p>
+                        <div class="emp-actions">
+                            <a href="https://wa.me/${emp.whats}" target="_blank" class="btn-wpp">WhatsApp</a>
+                            <a href="${emp.maps}" target="_blank" class="btn-maps">Maps</a>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
-        function alternarConcluido(index) {
-            const itens = JSON.parse(localStorage.getItem('guia_lista_compras')) || [];
-            itens[index].concluido = !itens[index].concluido;
-            localStorage.setItem('guia_lista_compras', JSON.stringify(itens));
-            carregarItens();
+        function carregarPlantao() {
+            document.getElementById('nomePlantao').textContent = db.plantao.nome;
+            document.getElementById('endPlantao').textContent = '📍 ' + db.plantao.end;
+            document.getElementById('horaPlantao').textContent = '⏰ ' + db.plantao.hora;
+            document.getElementById('telPlantao').href = 'tel:' + db.plantao.tel.replace(/\D/g,'');
         }
 
-        function removerItem(index) {
-            const itens = JSON.parse(localStorage.getItem('guia_lista_compras')) || [];
-            itens.splice(index, 1);
-            localStorage.setItem('guia_lista_compras', JSON.stringify(itens));
-            carregarItens();
+        function buscar() {
+            const termo = document.getElementById('buscaInput').value.toLowerCase();
+            const filtradas = db.empresas.filter(e =>
+                e.nome.toLowerCase().includes(termo) || e.desc.toLowerCase().includes(termo)
+            );
+            const grid = document.getElementById('empresasGrid');
+            grid.innerHTML = '';
+            filtradas.forEach(emp => {
+                grid.innerHTML += `
+                    <div class="emp-card ${emp.premium? 'emp-premium' : ''}">
+                        <h3>${emp.nome}</h3>
+                        <span class="emp-cat">${emp.cat}</span>
+                        <p>${emp.desc}</p>
+                        <div class="emp-actions">
+                            <a href="https://wa.me/${emp.whats}" target="_blank" class="btn-wpp">WhatsApp</a>
+                            <a href="${emp.maps}" target="_blank" class="btn-maps">Maps</a>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
-        // Permitir adicionar ao pressionar Enter
-        document.getElementById('item-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') adicionarItem();
-        });
+        function filtrarCat(cat) {
+            if(cat === 'Ônibus') window.open('https://www.util.com.br/');
+            else if(cat === 'Previsão') window.open('https://www.climatempo.com.br/previsao-do-tempo/cidade/402/valenca-rj');
+            else if(cat === 'Emergência') window.open('tel:192');
+            else if(cat === 'Cinema') alert('Em breve: programação do cinema de Valença');
+            else {
+                const filtradas = db.empresas.filter(e => e.cat === cat);
+                const grid = document.getElementById('empresasGrid');
+                grid.innerHTML = '';
+                filtradas.forEach(emp => {
+                    grid.innerHTML += `
+                        <div class="emp-card ${emp.premium? 'emp-premium' : ''}">
+                            <h3>${emp.nome}</h3>
+                            <span class="emp-cat">${emp.cat}</span>
+                            <p>${emp.desc}</p>
+                            <div class="emp-actions">
+                                <a href="https://wa.me/${emp.whats}" target="_blank" class="btn-wpp">WhatsApp</a>
+                                <a href="${emp.maps}" target="_blank" class="btn-maps">Maps</a>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        function abrirPlanos() {
+            alert(`PLANO ESSENCIAL: R$${db.planos.essencial}/mês\nPLANO PREMIUM: R$${db.planos.premium}/mês\n\nChama no WhatsApp: ${db.identidade.whats}`);
+            window.open(`https://wa.me/${db.identidade.whats}?text=Quero%20anunciar%20no%20Guia%20Marquês`);
+        }
+
+        // ADMIN
+        function abrirAdmin() {
+            const senha = prompt('Senha do Admin:');
+            if(senha === 'jonas200x') {
+                document.getElementById('modalAdmin').style.display = 'block';
+                carregarAdmin();
+            } else if(senha) alert('Senha incorreta');
+        }
+
+        function fecharAdmin() {
+            document.getElementById('modalAdmin').style.display = 'none';
+        }
+
+        function trocarTab(tab) {
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function carregarAdmin() {
+            document.getElementById('corPrincipal').value = db.identidade.corPrincipal;
+            document.getElementById('corSecundaria').value = db.identidade.corSecundaria;
+            document.getElementById('nomeAppInput').value = db.identidade.nome;
+            document.getElementById('whatsVendas').value = db.identidade.whats;
+            document.getElementById('precoEssencial').value = db.planos.essencial;
+            document.getElementById('precoPremium').value = db.planos.premium;
+            document.getElementById('autoPlantao').checked = db.plantao.auto;
+            document.getElementById('nomePlantaoInput').value = db.plantao.nome;
+            document.getElementById('endPlantaoInput').value = db.plantao.end;
+            document.getElementById('telPlantaoInput').value = db.plantao.tel;
+            carregarCategoriasAdmin();
+            carregarEmpresasAdmin();
+        }
+
+        function salvarCor() {
+            db.identidade.corPrincipal = document.getElementById('corPrincipal').value;
+            db.identidade.corSecundaria = document.getElementById('corSecundaria').value;
+            db.identidade.nome = document.getElementById('nomeAppInput').value;
+            db.identidade.whats = document.getElementById('whatsVendas').value;
+            salvarDB();
+            aplicarCores();
+        }
+
+        function salvarNome() { salvarCor(); }
+        function salvarWhats() { salvarCor(); }
+
+        function carregarCategoriasAdmin() {
+            const lista = document.getElementById('listaCategorias');
+            lista.innerHTML = '';
+            db.categorias.sort((a,b) => a.ordem - b.ordem).forEach((cat, i) => {
+                lista.innerHTML += `
+                    <li class="sortable-item" data-id="${cat.id}">
+                        <span class="drag-handle">⋮⋮</span>
+                        <span style="font-size:1.8rem;">${cat.icone}</span>
+                        <div style="flex:1;">
+                            <strong>${cat.nome}</strong>
+                            <input type="color" value="${cat.cor || '#0F9D58'}" onchange="mudarCorCat(${i}, this.value)" style="width:45px;height:35px;margin-left:12px;">
+                        </div>
+                        <div class="item-actions">
+                            <button class="icon-btn" onclick="editarCategoria(${i})" style="background:#3b82f6;color:white;">✏️</button>
+                            <button class="icon-btn" onclick="excluirCategoria(${i})" style="background:#dc2626;color:white;">🗑️</button>
+                        </div>
+                    </li>
+                `;
+            });
+            new Sortable(lista, {
+                animation: 150,
+                handle: '.drag-handle',
+                onEnd: function() {
+                    const items = document.querySelectorAll('#listaCategorias.sortable-item');
+                    items.forEach((item, idx) => {
+                        const cat = db.categorias.find(c => c.id == item.dataset.id);
+                        if(cat) cat.ordem = idx + 1;
+                    });
+                    salvarDB();
+                    renderizarCategorias();
+                }
+            });
+        }
+
+        function novaCategoria() {
+            const nome = prompt('Nome da categoria:');
+            const icone = prompt('Emoji do ícone:');
+            if(nome && icone) {
+                db.categorias.push({ id: Date.now(), nome, icone, ordem: db.categorias.length + 1 });
+                salvarDB();
+                carregarCategoriasAdmin();
+                renderizarCategorias();
+            }
+        }
+
+        function mudarCorCat(idx, cor) {
+            db.categorias[idx].cor = cor;
+            salvarDB();
+        }
+
+        function editarCategoria(idx) {
+            const cat = db.categorias[idx];
+            const nome = prompt('Nome:', cat.nome);
+            const icone = prompt('Ícone:', cat.icone);
+            if(nome) cat.nome = nome;
+            if(icone) cat.icone = icone;
+            salvarDB();
+            carregarCategoriasAdmin();
+            renderizarCategorias();
+        }
+
+        function excluirCategoria(idx) {
+            if(confirm('Excluir categoria?')) {
+                db.categorias.splice(idx, 1);
+                salvarDB();
+                carregarCategoriasAdmin();
+                renderizarCategorias();
+            }
+        }
+
+        function carregarEmpresasAdmin() {
+            const lista = document.getElementById('listaEmpresasAdmin');
+            lista.innerHTML = '';
+            db.empresas.forEach((emp, i) => {
+                lista.innerHTML += `
+                    <div class="sortable-item">
+                        <div style="flex:1;">
+                            <strong>${emp.nome}</strong> ${emp.premium? '⭐' : ''}<br>
+                            <small>${emp.cat} - ${emp.desc}</small>
+                        </div>
+                        <div class="item-actions">
+                            <button class="icon-btn" onclick="editarEmpresa(${i})" style="background:#3b82f6;color:white;">✏️</button>
+                            <button class="icon-btn" onclick="excluirEmpresa(${i})" style="background:#dc2626;color:white;">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function novaEmpresa() {
+            const nome = prompt('Nome da empresa:');
+            if(!nome) return;
+            const cat = prompt('Categoria:', 'Comércio');
+            const desc = prompt('Descrição:');
+            const whats = prompt('WhatsApp (só números):', '5524981400928');
+            const maps = prompt('Link Google Maps:');
+            const premium = confirm('É Premium?');
+            db.empresas.push({ id: Date.now(), nome, cat, desc, whats, maps, premium });
+            salvarDB();
+            carregarEmpresasAdmin();
+            renderizarEmpresas();
+        }
+
+        function salvarPlantao() {
+            db.plantao.auto = document.getElementById('autoPlantao').checked;
+            db.plantao.nome = document.getElementById('nomePlantaoInput').value;
+            db.plantao.end = document.getElementById('endPlantaoInput').value;
+            db.plantao.tel = document.getElementById('telPlantaoInput').value;
+            salvarDB();
+            carregarPlantao();
+            alert('Farmácia de plantão salva!');
+        }
+
+        function salvarPlanos() {
+            db.planos.essencial = document.getElementById('precoEssencial').value;
+            db.planos.premium = document.getElementById('precoPremium').value;
+            salvarDB();
+            alert('Planos salvos!');
+        }
+
+        function exportarDados() {
+            const blob = new Blob([JSON.stringify(db, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `guia-marques-backup-${Date.now()}.json`; a.click();
+        }
+
+        function salvarDB() {
+            localStorage.setItem('guiaMarquesDB', JSON.stringify(db));
+        }
+
+        // INIT
+        init();
     </script>
 </body>
 </html>
-
-```
